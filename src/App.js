@@ -1,54 +1,37 @@
-  import React from 'react';
-import ReactDOM from 'react-dom';
-import PropTypes from 'prop-types';
+    import React from 'react';
+    import ReactDOM from 'react-dom';
+    import PropTypes from 'prop-types';
 
-class App extends React.Component{
-  constructor(){
-    super();
-    this.state ={val: 0}
-    this.update = this.update.bind(this)
-  }
-  update(){
-    this.setState({val:this.state.val +1})
-  }
-  componentWillMount() {
-    console.log('componentWillMount');
-    this.setState({m: 2})
-  }
-  componentDidMount() {
-    console.log('componentDidMount');
-    this.inc =setInterval(this.update,500)
-  }
-  componentWillUnmount() {
-    console.log('componentWillUnMount');
-    clearInterval(this.inc)
-  }
-  render(){
-      console.log('render');
-      return <button onClick={this.update}>{this.state.val * this.state.m}</button>
-  }
-} // App Component
+    class App extends React.Component{
+      constructor(){
+        super();
+        this.state ={increasing:false}
+      }
+      update(){
+        ReactDOM.render(
+          <App val={this.props.val+1}/>,
+          document.getElementById('root'))
 
-
-
-class Wrapper extends React.Component {
-  mount(){
-    ReactDOM.render(<App/>,document.getElementById('a'))
-  }
-
-  unmount(){
-    ReactDOM.unmountComponentAtNode(document.getElementById('a'))
-  }
-    render() {
-        return (
-          <div>
-            <button onClick={this.mount.bind(this)}>Mount</button>
-            <button onClick={this.unmount.bind(this)}>UnMount</button>
-            <div id="a"></div>
-          </div>
+      }
+      componentWillReceiveProps(nextProps) {
+        this.setState({increasing: nextProps.val > this.props.val})
+      }
+      shouldComponentUpdate(nextProps, nextState) {
+        return nextProps.val % 5 ===0;
+      }
+      render(){
+        console.log(this.state.increasing);
+        return(
+        <button onClick={this.update.bind(this)}>
+          {this.props.val}
+        </button>
         )
-    }
-}
+      }
+      componentDidUpdate(prevProps, prevState) {
+        console.log('prevProps: ${prevProps.val}' ); 
+      }
+    } // App Component
 
+    App.defaultProps = {val:0}
 
-export default Wrapper
+    export default App
