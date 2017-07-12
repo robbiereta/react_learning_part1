@@ -1,43 +1,54 @@
-import React from 'react';
+  import React from 'react';
 import ReactDOM from 'react-dom';
 import PropTypes from 'prop-types';
 
 class App extends React.Component{
   constructor(){
     super();
-    this.state ={a: ''}
+    this.state ={val: 0}
+    this.update = this.update.bind(this)
   }
-  update(e){
-    this.setState({
-      a:this.a.refs.input.value,
-      // a: this.refs.a.value// a: this.refs.a.value,//referencias a elementos
-      b: this.refs.b.value
-    })
+  update(){
+    this.setState({val:this.state.val +1})
   }
-  render(){ // con una variable
-      return (
-        <div>
-        <Input
-          ref={ component => this.a = component}
-          update={this.update.bind(this)}
-          />{this.state.a}
-          <hr/>
-          <input
-            ref="b"
-            type="text"
-            onChange={this.update.bind(this)}
-            />{this.state.b}
-        </div>
-      )
+  componentWillMount() {
+    console.log('componentWillMount');
+    this.setState({m: 2})
+  }
+  componentDidMount() {
+    console.log('componentDidMount');
+    this.inc =setInterval(this.update,500)
+  }
+  componentWillUnmount() {
+    console.log('componentWillUnMount');
+    clearInterval(this.inc)
+  }
+  render(){
+      console.log('render');
+      return <button onClick={this.update}>{this.state.val * this.state.m}</button>
   }
 } // App Component
 
 
-class Input extends React.Component {
 
+class Wrapper extends React.Component {
+  mount(){
+    ReactDOM.render(<App/>,document.getElementById('a'))
+  }
+
+  unmount(){
+    ReactDOM.unmountComponentAtNode(document.getElementById('a'))
+  }
     render() {
-        return <div><input ref="input" type="text" onChange={this.props.update}/></div>
+        return (
+          <div>
+            <button onClick={this.mount.bind(this)}>Mount</button>
+            <button onClick={this.unmount.bind(this)}>UnMount</button>
+            <div id="a"></div>
+          </div>
+        )
     }
 }
 
-export default App
+
+export default Wrapper
